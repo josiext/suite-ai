@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import { Box, Text, Button, Input } from "@suit-ui/react";
+import { Box, Text, Button, Input, Navbar } from "@suit-ui/react";
 import { useEffect, useRef } from "react";
 import { useConversationsStore } from "@/stores/conversations";
 import Preview from "@/components/Preview";
@@ -34,35 +34,52 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Box>
+        <Navbar variant="static">
+          <Navbar.Brand className="font-semibold text-lg">
+            LEGAL CLOUD
+          </Navbar.Brand>
+          <Navbar.Content className="justify-between">
+            <Navbar.Group>
+              <Navbar.Item>Legal AI</Navbar.Item>
+              <Navbar.Item>Project Manager</Navbar.Item>
+              <Navbar.Item>TimeBilling</Navbar.Item>
+            </Navbar.Group>
+          </Navbar.Content>
+        </Navbar>
+        <Box className="flex flex-col items-center justify-center min-h-screen py-2 gap-4">
+          <Text as="h1" className="text-3xl font-bold">
+            Bienvenido a Legal AI
+          </Text>
 
-      <Box className="flex flex-col items-center justify-center min-h-screen py-2 gap-4">
-        <Text as="h1" className="text-lg font-bold">
-          Bienvenido a Suite AI
-        </Text>
+          <Text className=" text-neutral-400">
+            Consulta aquí por la informacion o estado de tus proyectos.
+          </Text>
 
-        <form onSubmit={handleSubmit}>
-          <Box className="flex  gap-4">
-            <Input
-              value={prompt}
-              onChange={(event) => {
-                const { value } = event.target;
-                setPrompt(value);
-              }}
-              disabled={streaming}
-              ref={inputRef}
-              autoFocus
-              placeholder="Crea un botón de color rojo con un borde de 2px y un borde redondeado de 5px."
-              name="prompt"
-              type="text"
-              className={`resize-none pr-10 ${
-                streaming ? "opacity-40 pointer-events-none" : ""
-              } placeholder-white/30 rounded-2xl block w-full text-md px-6 text-xl py-4 border border-zinc-600 bg-white/5 backdrop-blur-3xl sm:text-md shadow-lg text-white outline-none overflow-hidden transition ring-white/40 focus:ring-2`}
-            />
-            <Button type="submit">Enviar</Button>
-          </Box>
-        </form>
+          <form onSubmit={handleSubmit}>
+            <Box className="flex  gap-4">
+              <Input
+                value={prompt}
+                onChange={(event) => {
+                  const { value } = event.target;
+                  setPrompt(value);
+                }}
+                disabled={streaming}
+                ref={inputRef}
+                autoFocus
+                placeholder="Que proyectos tenemos?"
+                name="prompt"
+                type="text"
+                className={`resize-none pr-10 ${
+                  streaming ? "opacity-40 pointer-events-none" : ""
+                } placeholder-white/30 rounded-2xl block w-[600px] text-md px-6 text-xl py-4 border border-zinc-600 bg-white/5 backdrop-blur-3xl sm:text-md shadow-lg text-white outline-none overflow-hidden transition ring-white/40 focus:ring-2`}
+              />
+              <Button type="submit">Enviar</Button>
+            </Box>
+          </form>
 
-        <Preview />
+          <Preview />
+        </Box>
       </Box>
     </>
   );
