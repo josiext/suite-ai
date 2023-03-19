@@ -8,7 +8,7 @@ import {
   Input,
   Select,
   Tag,
-  FormControl,
+  TextArea,
 } from "@suit-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -16,18 +16,42 @@ import { useEffect, useState } from "react";
 export default function ProjectManager() {
   const [open, setOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState({ label: "Backlog", value: "backlog" });
+  const [createForm, setCreateForm] = useState<{
+    name: string;
+    description: string;
+    status: Project["status"];
+  }>({ name: "", description: "", status: "backlog" });
 
-  const handleCreateProject = async () => {
+  const [prompt, setPrompt] = useState("");
+
+  const handleCreateProject = async ({
+    name,
+    description,
+    status,
+  }: Pick<Project, "name" | "description" | "status">) => {
     await axios.post("/api/projects", {
       name,
       description,
-      status: status.value,
+      status,
     });
 
     loadProjects();
+  };
+
+  const handlePromptGPT = async () => {
+    const res = await axios.post("/api/project-gpt", {
+      prompt,
+    });
+
+    const instruction = res.data.instruction;
+
+    await handleCreateProject({
+      name: instruction.name,
+      description: instruction.description,
+      status: "backlog",
+    });
+
+    await loadProjects();
   };
 
   useEffect(() => {
@@ -47,7 +71,16 @@ export default function ProjectManager() {
           Project Manager
         </Text>
 
-        <Input className="w-96 mt-4" />
+        <TextArea
+          className="w-96 mt-4"
+          placeholder="Crea un proyecton con el nombre..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+
+        <Button className="w-96" onClick={() => handlePromptGPT()}>
+          Procesar
+        </Button>
 
         <Box className="mt-10">
           <Button onClick={() => setOpen(true)}>Crear Proyecto</Button>
@@ -86,8 +119,10 @@ export default function ProjectManager() {
               <Input
                 type="text"
                 className="border border-neutral-300 rounded-md p-2"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={createForm.name}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, name: e.target.value })
+                }
               />
               <Text as="label" className="text-sm font-semibold">
                 Descripcion
@@ -95,13 +130,17 @@ export default function ProjectManager() {
               <Input
                 type="text"
                 className="border border-neutral-300 rounded-md p-2"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={createForm.description}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, description: e.target.value })
+                }
               />
 
               <Select
-                value={status}
-                onChange={(e: any) => setStatus(e)}
+                value={createForm.status}
+                onChange={(e: any) =>
+                  setCreateForm({ ...createForm, status: e.target.value })
+                }
                 options={[
                   {
                     label: "Backlog",
@@ -123,10 +162,9 @@ export default function ProjectManager() {
             <Button
               className="mt-6"
               onClick={() => {
-                handleCreateProject();
+                handleCreateProject(createForm);
                 setOpen(false);
-                setName("");
-                setDescription("");
+                setCreateForm({ name: "", description: "", status: "backlog" });
               }}
             >
               Crear
