@@ -19,8 +19,18 @@ export default function ProjectManager() {
   const [createForm, setCreateForm] = useState<{
     name: string;
     description: string;
-    status: Project["status"];
-  }>({ name: "", description: "", status: "backlog" });
+    status: {
+      label: string;
+      value: Project["status"];
+    };
+  }>({
+    name: "",
+    description: "",
+    status: {
+      label: "Backlog",
+      value: "backlog",
+    },
+  });
 
   const [prompt, setPrompt] = useState("");
 
@@ -137,10 +147,15 @@ export default function ProjectManager() {
               />
 
               <Select
+                // TODO que select sean objectos
                 value={createForm.status}
-                onChange={(e: any) =>
-                  setCreateForm({ ...createForm, status: e.target.value })
-                }
+                onChange={(e: any) => {
+                  console.log(e.target.value);
+                  setCreateForm({
+                    ...createForm,
+                    status: e.target.value,
+                  });
+                }}
                 options={[
                   {
                     label: "Backlog",
@@ -162,9 +177,19 @@ export default function ProjectManager() {
             <Button
               className="mt-6"
               onClick={() => {
-                handleCreateProject(createForm);
+                handleCreateProject({
+                  ...createForm,
+                  status: createForm.status.value,
+                });
                 setOpen(false);
-                setCreateForm({ name: "", description: "", status: "backlog" });
+                setCreateForm({
+                  name: "",
+                  description: "",
+                  status: {
+                    label: "Backlog",
+                    value: "backlog",
+                  },
+                });
               }}
             >
               Crear
