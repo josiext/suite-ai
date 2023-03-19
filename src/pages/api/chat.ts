@@ -1,4 +1,4 @@
-import { PROJECTS } from "@/stores/db";
+import { ProjectStore } from "@/stores/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const { OPENAI_API_KEY } = process.env;
@@ -9,54 +9,47 @@ interface Data {
   error: string;
 }
 
-const projectsPrompt = PROJECTS.reduce(
-  (acc, project) =>
-    acc +
-    `\n Nombre de proyecto: '${project.name}'. Descripción de proyecto: '${project.description}'. Fecha de creación del proyecto:'${project.createdDate}'.`,
-  ""
-);
-
-const messages = [
-  {
-    role: "system",
-    content:
-      "Asume que eres un asistente virtual de una aplicación que administra proyectos. El usuario te va a ingresar los nombres, descripciónes y fechas de creacion de los proyectos que se tienen. El usuario también te consultará por estos proyectos, por sus nombres, descripción y fechas de creacion.",
-  },
-  {
-    role: "user",
-    content: "Estos son los proyectos que tenemos: " + projectsPrompt,
-  },
-  {
-    role: "assistant",
-    content: "Proyecto registrado.",
-  },
-  {
-    role: "user",
-    content: "Que proyectos tenemos actualmente?",
-  },
-  {
-    role: "assistant",
-    content:
-      "Los proyectos que tenemos actualmente son: " +
-      PROJECTS.reduce((acc, item) => "\n • " + acc + item.name + ", ", ""),
-  },
-  {
-    role: "user",
-    content:
-      "Dame la descripcion del proyecto Provida - pedir información de clientes",
-  },
-  {
-    role: "assistant",
-    content:
-      "La descripcion del proyecto 'Provida - pedir información de clientes' es: " +
-      PROJECTS[1].description,
-  },
-];
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const projects = await ProjectStore.get();
+
+  const projectsPrompt = projects.reduce(
+    (acc, project) =>
+      acc +
+      `\n Nombre de proyecto: '${project.name}'. Descripción de proyecto: '${project.description}'. Fecha de creación del proyecto:'${project.createdAt}'. Estado del proyecto: '${project.status}'.`,
+    ""
+  );
+
+  const messages = [
+    {
+      role: "system",
+      content:
+        "Asume que eres un asistente virtual de una aplicación que administra proyectos. Tu nombre  es John Lemon. El usuario te va a ingresar los nombres, descripciónes y fechas de creacion de los proyectos que se tienen. El usuario también te consultará por estos proyectos, por sus nombres, descripción, fechas de creacion y estado.",
+    },
+    {
+      role: "user",
+      content: `Estos son los proyectos que tenemos: ${
+        projectsPrompt.length > 0 ? projectsPrompt : "No hay proyectos."
+      }`,
+    },
+    {
+      role: "assistant",
+      content: "Proyectos registrados.",
+    },
+    {
+      role: "user",
+      content: "¿Qué proyectos tenemos?",
+    },
+    {
+      role: "assistant",
+      content:
+        "Los proyectos que tenemos son: " +
+        projects.reduce((acc, project) => `${acc} - '${project.name}'`, ""),
+    },
+  ];
+
   if (req.method !== "GET") return res.status(405).end();
 
   const { prompt } = req.query;

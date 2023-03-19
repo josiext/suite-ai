@@ -4,6 +4,7 @@ import { Box, Text, Button, Input, Navbar } from "@suit-ui/react";
 import { useEffect, useRef } from "react";
 import { useConversationsStore } from "@/stores/conversations";
 import Preview from "@/components/Preview";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,13 +14,13 @@ export default function Home() {
   const prompt = useConversationsStore((state: any) => state.prompt);
   const streaming = useConversationsStore((state: any) => state.streaming);
 
-  const generateComponent = useConversationsStore(
-    (state: any) => state.generateComponent
+  const generateResponse = useConversationsStore(
+    (state: any) => state.generateResponse
   );
 
   async function handleSubmit(event: any) {
     event.preventDefault();
-    generateComponent({ prompt });
+    generateResponse({ prompt });
   }
 
   useEffect(() => {
@@ -35,18 +36,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
-        <Navbar variant="static">
-          <Navbar.Brand className="font-semibold text-lg">
-            LEGAL CLOUD
-          </Navbar.Brand>
-          <Navbar.Content className="justify-between">
-            <Navbar.Group>
-              <Navbar.Item>Legal AI</Navbar.Item>
-              <Navbar.Item>Project Manager</Navbar.Item>
-              <Navbar.Item>TimeBilling</Navbar.Item>
-            </Navbar.Group>
-          </Navbar.Content>
-        </Navbar>
         <Box className="flex flex-col items-center justify-center min-h-screen py-2 gap-4">
           <Text as="h1" className="text-3xl font-bold">
             Bienvenido a Legal AI
@@ -77,7 +66,6 @@ export default function Home() {
               <Button type="submit">Enviar</Button>
             </Box>
           </form>
-
           <Preview />
         </Box>
       </Box>

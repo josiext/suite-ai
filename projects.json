@@ -1,0 +1,14 @@
+[
+  {
+    "name": "BECO",
+    "description": "BECO necesita que demandemos a la cartera de deudores serie 1."
+  },
+  {
+    "name": "Notificacion de demanda a clientes del Tag",
+    "description": "Notificacion de demanda a clientes del tag de la carretera de santiago linea 1."
+  },
+  {
+    "name": "Demanda de deudores Lider",
+    "description": "Desde Lider de cobranza se necesita que se cobren las ultimas demandas pendientes que quedan del año 2021."
+  }
+]

@@ -1,21 +1,21 @@
 import { create } from "zustand";
 import { APIS } from "@/config/consts";
 
-export const useConversationsStore = create((set, get) => ({
-  code: null,
+export const useConversationsStore = create((set) => ({
+  response: "",
   streaming: false,
   prompt: "",
   setPrompt: (prompt: string) => {
-    set({ code: null, prompt });
+    set({ prompt });
   },
 
-  generateComponent: async ({ prompt }: any) => {
+  generateResponse: async ({ prompt }: { prompt: string }) => {
     set({ streaming: true });
 
     const url = `${APIS.GENERATE}?prompt=${prompt}`;
 
     const eventSource = new EventSource(url);
-    let code = "";
+    let response = "";
 
     eventSource.onerror = (error) => {
       console.error(error);
@@ -33,8 +33,8 @@ export const useConversationsStore = create((set, get) => ({
         return;
       }
 
-      code += JSON.parse(data);
-      set(() => ({ code }));
+      response += JSON.parse(data);
+      set(() => ({ response }));
     };
   },
 }));
