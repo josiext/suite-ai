@@ -89,7 +89,7 @@ export default function ProjectManager() {
         />
 
         <Button className="w-96" onClick={() => handlePromptGPT()}>
-          Procesar
+          Procesar - Legal AI
         </Button>
 
         <Box className="mt-10">
@@ -147,13 +147,11 @@ export default function ProjectManager() {
               />
 
               <Select
-                // TODO que select sean objectos
                 value={createForm.status}
-                onChange={(e: any) => {
-                  console.log(e.target.value);
+                onChange={(value: any) => {
                   setCreateForm({
                     ...createForm,
-                    status: e.target.value,
+                    status: value,
                   });
                 }}
                 options={[

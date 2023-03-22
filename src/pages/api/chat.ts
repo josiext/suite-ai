@@ -26,7 +26,7 @@ export default async function handler(
     {
       role: "system",
       content:
-        "Asume que eres un asistente virtual de una aplicación que administra proyectos. Tu nombre  es John Lemon. El usuario te va a ingresar los nombres, descripciónes y fechas de creacion de los proyectos que se tienen. El usuario también te consultará por estos proyectos, por sus nombres, descripción, fechas de creacion y estado.",
+        "Asume que tu nombre  es John Lemon y eres un asistente virtual de la Suite de Lemontech. El usuario te va a ingresar los nombres, descripciónes y fechas de creacion de los proyectos que se tienen. El usuario también te consultará por estos proyectos, por sus nombres, descripción, fechas de creacion y estado.",
     },
     {
       role: "user",
@@ -35,18 +35,29 @@ export default async function handler(
       }`,
     },
     {
-      role: "assistant",
-      content: "Proyectos registrados.",
-    },
-    {
       role: "user",
       content: "¿Qué proyectos tenemos?",
     },
     {
       role: "assistant",
+      content: `Los proyectos que tenemos son: 
+        ${
+          projectsPrompt.length > 0
+            ? projects.reduce(
+                (acc, project) => `${acc} - '${project.name}'`,
+                ""
+              )
+            : "Lo siento, por el momento no hay proyectos registrados."
+        }`,
+    },
+    {
+      role: "user",
+      content: "Quiero crear un proyecto",
+    },
+    {
+      role: "assistant",
       content:
-        "Los proyectos que tenemos son: " +
-        projects.reduce((acc, project) => `${acc} - '${project.name}'`, ""),
+        "Ingrese a Project Manager mediante la barra de navegacion y presione el boton de crear proyecto.",
     },
   ];
 
