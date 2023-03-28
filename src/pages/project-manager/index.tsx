@@ -14,6 +14,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ProjectManager() {
+  const [projectModified, setProjectModified] = useState<
+    Project["name"] | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -46,7 +49,8 @@ export default function ProjectManager() {
       status,
     });
 
-    loadProjects();
+    await loadProjects();
+    setProjectModified(name);
   };
 
   const updateProjectStatus = async (
@@ -57,7 +61,8 @@ export default function ProjectManager() {
       status,
     });
 
-    loadProjects();
+    await loadProjects();
+    setProjectModified(name);
   };
 
   const handlePromptGPT = async () => {
@@ -70,7 +75,7 @@ export default function ProjectManager() {
 
       if (instruction.type === "update-status") {
         await updateProjectStatus(instruction.name, instruction.description);
-      } else if (instruction.type === "create-project") {
+      } else if (instruction.type === "create") {
         await handleCreateProject({
           name: instruction.name,
           description: instruction.description,
@@ -127,7 +132,9 @@ export default function ProjectManager() {
             {projects.map((project) => (
               <Card
                 key={project.id}
-                className="w-96 border-blue-600 transition-all duration-600"
+                className={`w-96 border-blue-600 transition-all duration-2000 ${
+                  projectModified === project.name ? "border-2" : ""
+                }`}
               >
                 <Card.Header className="font-semibold">
                   <Text className="text-lg ">{project.name}</Text>
