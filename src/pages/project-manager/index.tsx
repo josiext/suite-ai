@@ -13,6 +13,24 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+interface ProjectForm {
+  name: string;
+  description: string;
+  status: {
+    label: string;
+    value: Project["status"];
+  };
+}
+
+const defaultForm: ProjectForm = {
+  name: "",
+  description: "",
+  status: {
+    label: "Backlog",
+    value: "backlog",
+  },
+};
+
 export default function ProjectManager() {
   const [projectModified, setProjectModified] = useState<
     Project["name"] | null
@@ -20,22 +38,7 @@ export default function ProjectManager() {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [createForm, setCreateForm] = useState<{
-    name: string;
-    description: string;
-    status: {
-      label: string;
-      value: Project["status"];
-    };
-  }>({
-    name: "",
-    description: "",
-    status: {
-      label: "Backlog",
-      value: "backlog",
-    },
-  });
-
+  const [createForm, setCreateForm] = useState<ProjectForm>(defaultForm);
   const [prompt, setPrompt] = useState("");
 
   const handleCreateProject = async ({
@@ -98,10 +101,9 @@ export default function ProjectManager() {
     loadProjects();
   }, []);
 
-  const loadProjects = () => {
-    axios.get("/api/project").then((res) => {
-      setProjects(res.data);
-    });
+  const loadProjects = async () => {
+    const res = await axios.get("/api/project");
+    setProjects(res.data);
   };
 
   return (
@@ -219,14 +221,7 @@ export default function ProjectManager() {
                   status: createForm.status.value,
                 });
                 setOpen(false);
-                setCreateForm({
-                  name: "",
-                  description: "",
-                  status: {
-                    label: "Backlog",
-                    value: "backlog",
-                  },
-                });
+                setCreateForm(defaultForm);
               }}
             >
               Crear
