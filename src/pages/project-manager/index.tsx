@@ -14,6 +14,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ProjectManager() {
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [createForm, setCreateForm] = useState<{
@@ -48,20 +49,44 @@ export default function ProjectManager() {
     loadProjects();
   };
 
+  const updateProjectStatus = async (
+    name: Project["name"],
+    status: Project["status"]
+  ) => {
+    await axios.patch(`/api/project-update/${name}`, {
+      status,
+    });
+
+    loadProjects();
+  };
+
   const handlePromptGPT = async () => {
-    const res = await axios.post("/api/project-gpt", {
-      prompt,
-    });
+    try {
+      const res = await axios.post("/api/project-gpt", {
+        prompt,
+      });
 
-    const instruction = res.data.instruction;
+      const instruction = res.data.instruction;
 
-    await handleCreateProject({
-      name: instruction.name,
-      description: instruction.description,
-      status: "backlog",
-    });
+      if (instruction.type === "update-status") {
+        await updateProjectStatus(instruction.name, instruction.description);
+      } else if (instruction.type === "create-project") {
+        await handleCreateProject({
+          name: instruction.name,
+          description: instruction.description,
+          status: "backlog",
+        });
+      } else {
+        throw new Error("Intruccion invalida.");
+      }
 
-    await loadProjects();
+      await loadProjects();
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo procesar la instrucción.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -88,17 +113,24 @@ export default function ProjectManager() {
           onChange={(e) => setPrompt(e.target.value)}
         />
 
-        <Button className="w-96" onClick={() => handlePromptGPT()}>
-          Procesar - Legal AI
+        <Button
+          className="w-96"
+          onClick={() => handlePromptGPT()}
+          loading={isLoading}
+        >
+          Procesar con Legal AI
         </Button>
 
         <Box className="mt-10">
           <Button onClick={() => setOpen(true)}>Crear Proyecto</Button>
           <Box className="mt-4 flex gap-10">
             {projects.map((project) => (
-              <Card key={project.id} className="w-96">
+              <Card
+                key={project.id}
+                className="w-96 border-blue-600 transition-all duration-600"
+              >
                 <Card.Header className="font-semibold">
-                  <Text className="text-lg">{project.name}</Text>
+                  <Text className="text-lg ">{project.name}</Text>
                 </Card.Header>
                 <Card.Body>{project.description}</Card.Body>
                 <Card.Footer>

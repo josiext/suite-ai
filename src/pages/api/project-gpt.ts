@@ -1,5 +1,5 @@
+import { openai } from "@/utils/openai";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Configuration, OpenAIApi } from "openai";
 
 const messages = [
   {
@@ -20,12 +20,12 @@ const messages = [
   {
     role: "user",
     content:
-      "Crea un proyecto con el nombre de: BECO y sus amigos. Y con una descripcion: BECO y sus amigos es un proyecto de desarrollo de videojuegos.",
+      "Crea un proyecto con el nombre de: Scotiabank demandas urgentes. Y con una descripcion: Proyecto de desarrollo de videojuegos.",
   },
   {
     role: "assistant",
     content:
-      "create|BECO y sus amigos|BECO y sus amigos es un proyecto de desarrollo de videojuegos",
+      "create|Scotiabank demandas urgentes|Proyecto de desarrollo de videojuegos",
   },
   {
     role: "user",
@@ -47,12 +47,33 @@ const messages = [
     content:
       "create|hacer demandas a Consultorio las Polvoras|EL consultorio se ha portado muy mal, tiene muchas quejas",
   },
+  {
+    role: "user",
+    content:
+      "Cambia el estado del proyecto con nombre Banco Estado ayuda a Backlog",
+  },
+  {
+    role: "assistant",
+    content: "update-status|Banco Estado ayuda|backlog",
+  },
+  {
+    role: "user",
+    content: "Cambia estado de proyecto Scotiabank a activo",
+  },
+  {
+    role: "assistant",
+    content: "update-status|Scotiabank|active",
+  },
+  {
+    role: "user",
+    content:
+      "Pasa el estado del proyecto Demandas colectivas a Bolivia a terminado",
+  },
+  {
+    role: "assistant",
+    content: "update-status|Demandas colectivas a Bolivia|done",
+  },
 ] as const;
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
 
 export interface Intruccion {
   type: "create" | "update" | "delete";

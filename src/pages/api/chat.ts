@@ -1,7 +1,6 @@
+import { OPENAI_API_KEY } from "@/configs";
 import { ProjectStore } from "@/stores/db";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-const { OPENAI_API_KEY } = process.env;
 
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -79,8 +78,6 @@ export default async function handler(
       model: "gpt-3.5-turbo",
       messages: [...messages, { role: "user", content: promptToSend }],
       stream: true,
-      temperature: 0.0,
-      stop: ["\ninfo:"],
     }),
   });
 
@@ -103,7 +100,7 @@ export default async function handler(
   while (true) {
     const { done, value } = await (reader?.read() || {});
     if (done) {
-      return res.end("data: [DONE]\n\n"); // TODO: Devolveremos otra cosa
+      return res.end("data: [DONE]\n\n");
     }
 
     const chunk = decoder.decode(value);
@@ -114,7 +111,7 @@ export default async function handler(
 
     for (const data of transformedChunk) {
       if (data === "[DONE]") {
-        return res.end("data: [DONE]\n\n"); // TODO: Devolveremos otra cosa
+        return res.end("data: [DONE]\n\n");
       }
 
       try {
