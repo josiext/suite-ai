@@ -43,7 +43,7 @@ export default function ProjectManager() {
     description,
     status,
   }: Pick<Project, "name" | "description" | "status">) => {
-    await axios.post("/api/projects", {
+    await axios.post("/api/project", {
       name,
       description,
       status,
@@ -57,7 +57,7 @@ export default function ProjectManager() {
     name: Project["name"],
     status: Project["status"]
   ) => {
-    await axios.patch(`/api/project-update/${name}`, {
+    await axios.patch(`/api/project/${name}`, {
       status,
     });
 
@@ -99,7 +99,7 @@ export default function ProjectManager() {
   }, []);
 
   const loadProjects = () => {
-    axios.get("/api/projects").then((res) => {
+    axios.get("/api/project").then((res) => {
       setProjects(res.data);
     });
   };
